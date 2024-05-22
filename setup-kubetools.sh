@@ -22,9 +22,9 @@ MYOS=$(hostnamectl | awk '/Operating/ { print $3 }')
 OSVERSION=$(hostnamectl | awk '/Operating/ { print $4 }')
 
 # detecting latest Kubernetes version
-KUBEVERSION=$(curl -s https://api.github.com/repos/kubernetes/kubernetes/releases/latest | jq -r '.tag_name')
-KUBEVERSION=${KUBEVERSION%.*}
-
+#KUBEVERSION=$(curl -s https://api.github.com/repos/kubernetes/kubernetes/releases/latest | jq -r '.tag_name')
+#KUBEVERSION=${KUBEVERSION%.*}
+KUBEVERSION=v1.30
 
 if [ $MYOS = "Ubuntu" ]
 then
@@ -34,8 +34,9 @@ then
 EOF
 	
 	sudo apt-get update && sudo apt-get install -y apt-transport-https curl
+ 	echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/${KUBEVERSION}/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 	curl -fsSL https://pkgs.k8s.io/core:/stable:/${KUBEVERSION}/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-	echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/${KUBEVERSION}/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+	
 sleep 2
 
 	sudo apt-get update
